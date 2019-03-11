@@ -1,0 +1,48 @@
+<ActionBar class="action-bar">
+    <!-- 
+        Use the NavigationButton as a side-drawer button in Android
+        because ActionItems are shown on the right side of the ActionBar
+        -->
+    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+    <!-- 
+        Use the ActionItem for IOS with position set to left. Using the
+        NavigationButton as a side-drawer button in iOS is not possible,
+        because its function is to always navigate back in the application.
+        -->
+    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
+    </ActionItem>
+    <Label class="action-bar-title" text="Ride Information"></Label>
+</ActionBar>
+
+<FlexboxLayout class="page">
+    <StackLayout row="0" orientation="vertical" padding="20" class="form">
+        <label [visibility]="(rideInfo.RideStatus == -1) ? 'visible':'collapse'" text="A Request has been placed for ride" style="margin-bottom:20"></label>
+
+        <label [visibility]="(rideInfo.RideStatus != -1) ? 'visible':'collapse'" text="Request updated for below ride"></label>
+        <label [visibility]="(rideInfo.RideStatus == 1) ? 'visible':'collapse'" text="Request for ride accepted by rider" fontSize="18"
+            style="margin-bottom:20"></label>
+        <label [visibility]="(rideInfo.RideStatus == 0) ? 'visible':'collapse'" text="Request for ride rejected by rider" fontSize="18"
+            style="margin-bottom:20"></label>
+
+        <Label text="Ride From Location"></Label>
+        <Label fontSize="18" [text]="rideInfo.RideFromLocation" style="margin-bottom:20"></Label>
+
+        <Label text="Ride To Location"></Label>
+        <Label fontSize="18" [text]="rideInfo.RideToLocation" style="margin-bottom:20"></Label>
+
+        <Label [visibility]="(rideInfo.RideStatus == 1) ? 'visible':'collapse'" text="Rider Contact Number"></Label>
+        <Label [visibility]="(rideInfo.RideStatus == 1) ? 'visible':'collapse'" fontSize="18" [text]="rideInfo.RideContactNo" style="margin-bottom:20"></Label>
+
+
+        <Label [visibility]="(rideInfo.RideStatus == -1) ? 'visible':'collapse'" text="Ride Distance (kms)"></Label>
+        <Label fontSize="18" [text]="rideInfo.RideDistance" style="margin-bottom:20"></Label>
+
+        <Label [visibility]="(rideInfo.RideStatus == -1) ? 'visible':'collapse'" text="Ride Start Time"></Label>
+        <Label fontSize="18" [text]="rideInfo.RidePickUpTime" style="margin-bottom:20"></Label>
+
+        <StackLayout [visibility]="(rideInfo.RideStatus == -1) ? 'visible':'collapse'">
+            <Button class="btn btn-primary btn-active" id="button" text="Accept" (tap)="onAccept()"></Button>
+            <Button class="btn btn-primary btn-active" id="button" text="Cancel" (tap)="OnCancel()"></Button>
+        </StackLayout>
+    </StackLayout>
+</FlexboxLayout>

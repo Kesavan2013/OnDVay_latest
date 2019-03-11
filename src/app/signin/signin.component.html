@@ -1,0 +1,63 @@
+<ActionBar class="action-bar">
+    <!-- 
+        Use the NavigationButton as a side-drawer button in Android
+        because ActionItems are shown on the right side of the ActionBar
+        -->
+    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+    <!-- 
+        Use the ActionItem for IOS with position set to left. Using the
+        NavigationButton as a side-drawer button in iOS is not possible,
+        because its function is to always navigate back in the application.
+        -->
+    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
+    </ActionItem>
+    <Label class="action-bar-title" text="Login"></Label>
+</ActionBar>
+
+
+<FlexboxLayout class="page">
+    <StackLayout class="form">
+
+        <StackLayout class="input-field" *ngIf="!isLoggingIn">
+            <TextField class="input" hint="UserName" autocorrect="false" autocapitalizationType="none" [(ngModel)]="user.username"
+                returnKeyType="next"></TextField>
+            <StackLayout class="hr-light"></StackLayout>
+        </StackLayout>
+
+        <StackLayout class="input-field">
+            <TextField class="input" hint="Email" keyboardType="email" autocorrect="false" autocapitalizationType="none" [(ngModel)]="user.email"
+                returnKeyType="next"></TextField>
+            <StackLayout class="hr-light"></StackLayout>
+        </StackLayout>
+        <!--  -->
+        <StackLayout class="input-field">
+            <TextField #password class="input" hint="Password" secure="true" [returnKeyType]="isLoggingIn ? 'done' : 'next'" [(ngModel)]="user.password"></TextField>
+            <StackLayout class="hr-light"></StackLayout>
+        </StackLayout>
+
+        <!-- <StackLayout class="input-field" *ngIf="!isLoggingIn">
+            <TextField #password class="input" hint="Confirm Password" secure="true" [returnKeyType]="isLoggingIn ? 'done' : 'next'"
+                [(ngModel)]="user.confirmpassword"></TextField>
+            <StackLayout class="hr-light"></StackLayout>
+        </StackLayout> -->
+        
+        <Button [text]="isLoggingIn ? 'Log In' : 'Sign Up'" (tap)="submit()" class="btn btn-primary"></Button>                    
+
+        <StackLayout aria-orientation="vertical" *ngIf="clickSignInButton">
+            <Button text="&#xf230; Login with FaceBook" (tap)="submitFB()" class="btn-primary fa fa-facebook-official"></Button>
+            <Button text="&#xf1a0; Login with Google" (tap)="submitGoogle()" class="btn-primary fa fa-google"></Button>
+        </StackLayout>
+
+        <Label *ngIf="isLoggingIn" text="Forgot your password?" class="login-label" (tap)="forgotPassword()"></Label>
+
+        <ActivityIndicator [busy]="isAuthenticating" rowSpan="2"></ActivityIndicator>
+
+    </StackLayout>
+
+    <Label class="login-label sign-up-label" (tap)="toggleForm()">
+        <FormattedString>
+            <Span [text]="isLoggingIn ? 'Don t have an account? ' : 'Back to Login'"></Span>
+            <Span [text]="isLoggingIn ? 'Sign up' : ''" class="bold"></Span>
+        </FormattedString>
+    </Label>
+</FlexboxLayout>

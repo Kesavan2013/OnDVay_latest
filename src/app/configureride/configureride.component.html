@@ -1,0 +1,49 @@
+<ActionBar class="action-bar">
+    <!-- 
+        Use the NavigationButton as a side-drawer button in Android
+        because ActionItems are shown on the right side of the ActionBar
+        -->
+    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+    <!-- 
+        Use the ActionItem for IOS with position set to left. Using the
+        NavigationButton as a side-drawer button in iOS is not possible,
+        because its function is to always navigate back in the application.
+        -->
+    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
+    </ActionItem>
+    <Label class="action-bar-title" text="Configure"></Label>
+</ActionBar>
+
+<FlexboxLayout class="page">
+    <StackLayout class="form" style="padding:30">
+
+        <StackLayout class="input-field" style="margin-bottom:20">
+            <TextField class="input" hint="Enter ContactNo" type="number" autocorrect="false" autocapitalizationType="none"
+                returnKeyType="next"></TextField>
+            <StackLayout class="hr-light"></StackLayout>
+        </StackLayout>
+
+        <StackLayout class="input-field" style="margin-bottom:20">
+            <TextField class="input" hint="Enter Vechile Name" autocorrect="false" autocapitalizationType="none"
+                returnKeyType="next"></TextField>
+            <StackLayout class="hr-light"></StackLayout>
+        </StackLayout>
+
+        <StackLayout class="input-field" style="margin-bottom:20">
+            <TextField class="input" hint="Enter Vechile Number"  autocorrect="false" autocapitalizationType="none"
+                returnKeyType="next"></TextField>
+            <StackLayout class="hr-light"></StackLayout>
+        </StackLayout>
+
+        <StackLayout class="input-field" style="margin-bottom:20">
+            <TextField class="input" hint="Enter Price for 1km"
+            autocorrect="false" autocapitalizationType="none"
+            returnKeyType="next"></TextField>
+            <StackLayout class="hr-light"></StackLayout>
+        </StackLayout>
+        
+        <Button text="Save" (tap)="saveConfigure()" class="btn btn-primary"></Button>
+
+        <ActivityIndicator [busy]="isAuthenticating" rowSpan="2"></ActivityIndicator>
+    </StackLayout>
+</FlexboxLayout>

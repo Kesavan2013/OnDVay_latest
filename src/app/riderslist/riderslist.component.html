@@ -1,0 +1,38 @@
+<ActionBar class="action-bar">
+    <!-- 
+        Use the NavigationButton as a side-drawer button in Android
+        because ActionItems are shown on the right side of the ActionBar
+        -->
+    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+    <!-- 
+        Use the ActionItem for IOS with position set to left. Using the
+        NavigationButton as a side-drawer button in iOS is not possible,
+        because its function is to always navigate back in the application.
+        -->
+    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
+    </ActionItem>
+    <Label class="action-bar-title" text="RidersList"></Label>
+</ActionBar>
+
+<GridLayout>
+    <ScrollView class="page">
+        <ListView *ngIf="!noRidersAvail" [items]="dataItems" (itemTap)="onItemTap($event)" (setupItemView)="onSetupItemView($event)"
+            class="list-group">
+            <ng-template let-dataitem="item" let-i="index" let-third="third"
+                let-header="header" let-footer="footer">
+                <GridLayout class="list-group-item" columns="auto,*" rows="auto,auto,auto,*">
+                    <Image stretch="none" width="70" height="70" [src]="dataitem.profilePhoto"
+                        row="0" col="0" rowSpan="3" style="margin-right:20"></Image>
+                    <Label [text]="dataitem.name" row="0" col="1"
+                        android:class="label-item"></Label>
+                    <Label [text]="dataitem.distance" row="1" col="1"
+                        android:class="label-item"></Label>
+                    <Label [text]="dataitem.status" row="2" col="1"
+                        android:class="label-item"></Label>
+                </GridLayout>
+            </ng-template>
+        </ListView>
+        <ActivityIndicator [busy]="showLoader" rowSpan="3"></ActivityIndicator>    
+    </ScrollView>    
+</GridLayout>
+

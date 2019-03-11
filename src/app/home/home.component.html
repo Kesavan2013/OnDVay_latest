@@ -1,0 +1,66 @@
+<ActionBar class="action-bar">
+    <!-- 
+    Use the NavigationButton as a side-drawer button in Android
+    because ActionItems are shown on the right side of the ActionBar
+    -->
+    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+    <!-- 
+    Use the ActionItem for IOS with position set to left. Using the
+    NavigationButton as a side-drawer button in iOS is not possible,
+    because its function is to always navigate back in the application.
+    -->
+    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
+    </ActionItem>
+    <Label class="action-bar-title" text="Home"></Label>
+</ActionBar>
+
+<StackLayout aria-orientation="vertical" padding="10">
+
+    <TabView>
+        <StackLayout *tabItem="{title: 'Find Riders'}">
+            <GridLayout rows="auto, auto" columns="auto,*" padding="10">
+                <Image row="0" col="0" height="25" width="25" src="http://maps.google.com/mapfiles/ms/micons/blue.png"></Image>
+                <label row="0" col="1" colSpan="1" hint="Current Location" fontSize="18" [text]="currentLocation">
+                </label>
+            </GridLayout>
+
+            <StackLayout class="hr-light"></StackLayout>
+
+            <SearchBar padding="10" hint="Search Location" [text]="searchPhrase" (textChange)="onTextChanged($event)" (submit)="onSubmit($event)"
+                (selectedIndexChanged)="onchange($event)" (opened)="onopen()" (closed)="onclose()" color="black"></SearchBar>
+
+            <StackLayout orientation="Vertical" style="margin-top:20">
+                <label text="Distance (kms)"></label>
+                <label [text]="totalRideDistance" fontSize="18" padding="13"></label>
+            </StackLayout>
+
+            <StackLayout orientation="Vertical">
+                <Label text="Vehicle Type"></Label>
+                <DropDown #dd class="dropdown" hint="Select Vehicle Type" fontSize="25" [items]="items" [(ngModel)]="selectedIndex"></DropDown>
+            </StackLayout>
+
+            <StackLayout orientation="Vertical" style="margin-top:20">
+                <label text="Ride Pick Up Time"></label>
+                <TimePicker style="margin-top:-20" (loaded)="onPickerLoaded($event)" (timeChange)="onTimeChanged($event)" verticalAlignment="center"
+                    class="m-15"></TimePicker>
+            </StackLayout>
+            <Button class="btn btn-primary btn-active" id="button" text="Find Riders" (tap)="onFindRiders($event)"></Button>
+        </StackLayout>
+        <StackLayout *tabItem="{title: 'Offer Rides'}">
+            <StackLayout>
+                <TextField class="input" hint="From Location" autocorrect="false" autocapitalizationType="none" 
+                returnKeyType="next"></TextField>
+                <StackLayout class="hr-light"></StackLayout>
+
+                <TextField class="input" hint="To Location" autocorrect="false" autocapitalizationType="none" 
+                returnKeyType="next"></TextField>
+                <StackLayout class="hr-light"></StackLayout>
+
+                <TextField class="input" hint="Start Time" autocorrect="false" autocapitalizationType="none" 
+                returnKeyType="next"></TextField>
+                <StackLayout class="hr-light"></StackLayout>
+            </StackLayout>
+        </StackLayout>
+    </TabView>
+    <ActivityIndicator [busy]="showLoader" rowSpan="3"></ActivityIndicator>
+</StackLayout>

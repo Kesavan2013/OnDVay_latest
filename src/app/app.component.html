@@ -1,0 +1,59 @@
+<!--
+RadSideDrawer is a UI component part of the Progress NativeScript UI set of components.
+Learn more about the RadSideDrawer UI component and how it can be customized in this documentation article:
+http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawer/getting-started
+-->
+<RadSideDrawer [drawerTransition]="sideDrawerTransition">
+    <GridLayout tkDrawerContent rows="auto, *" class="sidedrawer sidedrawer-left">
+        <StackLayout row="0" class="sidedrawer-header">
+            <Label [visibility]="loggedIn ? 'collapse':'visible'" class="sidedrawer-header-image fa" text="&#xf2bd;"></Label>
+            <GridLayout [visibility]="!loggedIn ? 'collapse':'visible'" rows="auto" columns="auto, *">
+                <Image  class="sidedrawer-header-image fa" row="0" col="0" [src]="profileImage" Stretch="None"></Image>                    
+                <StackLayout row="0" col="0" class="vr-light"></StackLayout>
+                <Label text="&#xf054;" row="0" col="1" style="font-size:40;color:white;margin-top:30;margin-left:20"                
+                 class="fa fa-chevron-right"></Label>
+            </GridLayout>
+
+
+            <StackLayout aria-orientation="vertical" [visibility]="loggedIn ? 'visible':'collapse'">
+                
+            </StackLayout>
+            <Label class="sidedrawer-header-brand" [text]="username"></Label>
+            <Label class="footnote" [text]="email"></Label>
+        </StackLayout>
+
+        <ScrollView row="1">
+            <StackLayout class="sidedrawer-content">
+                <GridLayout columns="auto, *" class="sidedrawer-list-item" [class.selected]="isComponentSelected('/home')" (tap)="onNavItemTap('/home')">
+                    <Label col="0" text="&#xf015;" class="fa"></Label>
+                    <Label col="1" text="Home" class="p-r-10"></Label>
+                </GridLayout>
+
+                <GridLayout *ngIf="loggedIn" columns="auto, *" class="sidedrawer-list-item" [class.selected]="isComponentSelected('/myrides')" (tap)="onNavItemTap('/myrides')">
+                    <Label col="0" text="&#xf256;" class="fa"></Label>
+                    <Label col="1" text="My Rides" class="p-r-10"></Label>
+                </GridLayout>
+
+                <GridLayout *ngIf="!loggedIn" columns="auto, *" class="sidedrawer-list-item" [class.selected]="isComponentSelected('/signin')" (tap)="onNavItemTap('/signin')">
+                    <Label col="0" text="&#xf013;" class="fa"></Label>
+                    <Label col="1" text="Join As Rider" class="p-r-10"></Label>
+                </GridLayout>
+
+                <GridLayout *ngIf="loggedIn" columns="auto, *" class="sidedrawer-list-item" [class.selected]="isComponentSelected('/configureride')" (tap)="onNavItemTap('/configureride')">
+                    <Label col="0" text="&#xf013;" class="fa"></Label>
+                    <Label col="1" text="Configure" class="p-r-10"></Label>
+                </GridLayout>
+
+                <StackLayout class="hr-light"></StackLayout>
+
+                <GridLayout *ngIf="loggedIn" columns="auto, *" class="sidedrawer-list-item" (tap)="Logout()">
+                    <Label col="0" text="&#xf2f5;" class="fa fa-sign-out-alt"></Label>
+                    <Label col="1" text="Sign Out" class="p-r-10"></Label>
+                </GridLayout>
+
+            </StackLayout>
+        </ScrollView>
+    </GridLayout>
+
+    <page-router-outlet tkMainContent class="page page-content"></page-router-outlet>
+</RadSideDrawer>
