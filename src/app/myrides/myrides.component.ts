@@ -4,6 +4,7 @@ import * as app from "tns-core-modules/application";
 import { BikePoolService } from "../shared/bikepoolservice";
 import { ServiceURL } from "../shared/services";
 import * as ApplicationSettings from "application-settings";
+import { LoadingScreen } from 'nativescript-loading-screen';
 
 class RideHistory {
   constructor(public rideTime: string, public rideDistance: string, public rideFromLocation: string,
@@ -19,14 +20,17 @@ class RideHistory {
 export class MyridesComponent implements OnInit {
 
   public rideHistoryItem: Array<RideHistory>;
+  private loadingScreen: LoadingScreen;
   showLoader: boolean;
   constructor(private bikepoolservice: BikePoolService) { }
 
   ngOnInit() {
     this.rideHistoryItem = [];
+    this.loadingScreen = new LoadingScreen();
     console.log(ApplicationSettings.getString("userid"));
     var objUser = { userid: ApplicationSettings.getString("userid") }
     this.showLoader = true;
+    this.LoaderShow();
     this.bikepoolservice.PostService(ServiceURL.GetMyRide, objUser).subscribe(
       success => this.riderList(success),
       error => this.riderListError(error)
@@ -35,6 +39,7 @@ export class MyridesComponent implements OnInit {
 
   riderList(riders) {
     this.showLoader = false;
+    this.hideLoader();
     let objRides = riders.rides;
     console.log(objRides);
     if (objRides.length > 0) {
@@ -45,7 +50,6 @@ export class MyridesComponent implements OnInit {
           objRides[i].rideFromLocation,
           objRides[i].rideToLocation
         )
-
         this.rideHistoryItem.push(ridehistory);
       }
     }
@@ -53,6 +57,7 @@ export class MyridesComponent implements OnInit {
 
   riderListError(error) {
     this.showLoader = false;
+    this.hideLoader();
     console.log("error" + error);
   }
 
@@ -60,5 +65,17 @@ export class MyridesComponent implements OnInit {
     const sideDrawer = <RadSideDrawer>app.getRootView();
     sideDrawer.showDrawer();
   }
+
+hideLoader() {
+    //this.loader.hide();
+    this.loadingScreen.close();
+}
+
+LoaderShow() {
+    //this.loader.show(this.options);
+    this.loadingScreen.show({
+        message: "Loading..."
+    });
+}
 
 }

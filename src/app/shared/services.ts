@@ -10,5 +10,9 @@ export enum ServiceURL {
     SignUpOnDVay = "/SignInWithUserPwd",
     Login = "/SignIn",
     DeleteLogOutUser = "/DeleteLogOutUser",
-    RideUpdateUserLocation = "/RideUpdateUserLocation"
+    RideUpdateUserLocation = "/RideUpdateUserLocation",
+    OfferRide = "/OfferRide",
+    ConfigureRider = "/ConfigureRider",
+    GetCongfigureRider = "/GetCongfigureRider",
+    GetUser = "/GetUser"
 }

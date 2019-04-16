@@ -7,8 +7,11 @@ import * as app from "tns-core-modules/application";
 import * as ApplicationSettings from "application-settings";
 const firebase = require("nativescript-plugin-firebase");
 import { RouterExtensions } from "nativescript-angular/router";
+import { NavigationEnd, Router } from "@angular/router";
 import { BikePoolService } from "../shared/bikepoolservice"
 import { ServiceURL } from "../shared/services"
+//import { Loader  } from "../shared/loader";
+import { LoadingScreen } from 'nativescript-loading-screen';
 
 export class User {
   username: string
@@ -26,6 +29,8 @@ export class User {
 })
 export class SigninComponent implements OnInit {
 
+  private loadingScreen: LoadingScreen;
+  options: any;
   test: string;
   isLoggingIn = false;
   isAuthenticating = false;
@@ -37,47 +42,77 @@ export class SigninComponent implements OnInit {
   public clickSignInButton: boolean;
 
   constructor(private routerExtensions: RouterExtensions,
+    private router: Router,
     private bikepoolservice: BikePoolService) {
+      this.loadingScreen = new LoadingScreen();      
+      this.isLoggingIn =false;
   }
 
-  ngOnInit() {
-    this.isLoggingIn = false;
+  ngOnInit() {            
     this.user = new User();
+    console.log(ApplicationSettings.getString("userid"));
+    if(ApplicationSettings.getString("userid") != null){
+      this.router.navigate(['/home']);
+    }    
   }
+
+  GetUser(){
+    var objUser = {userId : ApplicationSettings.getString("userid")};
+    this.bikepoolservice.PostService(ServiceURL.GetUser,objUser).subscribe(
+      user => this.userSuccess(user),
+      error => this.userError(error)
+    )
+  }
+
+  userSuccess(success)  { this.hideLoader(); }
+
+  userError(error){ this.hideLoader();  }
 
   toggleForm() {
     this.clickSignInButton = !this.clickSignInButton;
     this.isLoggingIn = !this.isLoggingIn;
   }
 
-  signUpSuccess(success) {
-    this.isAuthenticating = false;
-    console.log("loginsuccess" + success);
+  signUpSuccess(success) {    
+    this.hideLoader();    
     this.isLoggingIn = true;
   }
 
   signUpError(error) {
-    this.isAuthenticating = false;
-    console.log("loginsuccess" + error);
-    this.isAuthenticating = false;
+    this.hideLoader();
   }
 
-  loginSuccess(success) {
-    this.isAuthenticating = false;
+  loginSuccess(success) {    
+    this.hideLoader();
     let user = success.data.user;
     ApplicationSettings.setString("email", user.email);
     ApplicationSettings.setString("userid", user.uid);
+    if(user.name != undefined){
+      ApplicationSettings.setString("username",user.name);
+    }
+    else{
+      ApplicationSettings.remove("username");
+    }
+
+    if(user.profileImageURL != undefined){
+      ApplicationSettings.setString("profileImageURL",user.profileImageURL);
+    }
+    else{
+      ApplicationSettings.remove("profileImageURL");
+    }
+
     this.navigateHome();
   }
 
   loginError(error) {
     this.isAuthenticating = false;
-    console.log("loginError : " + JSON.stringify(error));
+    this.hideLoader();
   }
 
   busy: boolean;
 
   submit() {
+    this.showLoader();
     // Normal Signup on d vay    
     if (this.isLoggingIn == false) {      
       if (this.user.username != undefined && this.user.password != undefined &&
@@ -107,7 +142,7 @@ export class SigninComponent implements OnInit {
       }
     }
     else if(this.user.email != '' && this.user.password != '') {
-      this.isAuthenticating = true;
+      this.isAuthenticating = true;      
       // normal login on d vay
       if (this.user.email != undefined && this.user.password != undefined 
         && this.user.password != '' && this.user.email != '') {
@@ -128,6 +163,14 @@ export class SigninComponent implements OnInit {
     }
   }
 
+  hideLoader(){    
+    this.loadingScreen.close();
+  }
+
+  showLoader(){    
+    this.loadingScreen.show({message: "Loading..."});
+  }
+
   onDrawerButtonTap(): void {
     const sideDrawer = <RadSideDrawer>app.getRootView();
     sideDrawer.showDrawer();
@@ -135,8 +178,7 @@ export class SigninComponent implements OnInit {
 
   googleresult(result) {
     this.isLoggingIn = true;
-
-    this.isAuthenticating = true;
+    this.showLoader();    
     ApplicationSettings.setString("profileImage", result.profileImageURL);
     ApplicationSettings.setString("email", result.email);
     ApplicationSettings.setString("username", result.name);
@@ -155,17 +197,19 @@ export class SigninComponent implements OnInit {
     )
   }
 
-  createusersuccess(user) {
-    this.isAuthenticating = false;
-    console.log("createusersuccess" + user);
+  createusersuccess(user) {    
+    this.hideLoader();
     this.navigateHome();
   }
 
-  createusererror(error) {
-    this.isAuthenticating = false;
-    console.log("createusererror" + error);
+  createusererror(error) {    
+    this.hideLoader();
+    alert({
+      title: "On d Vay",
+      message: error,
+      okButtonText: "Ok"
+    })
   }
-
 
   googleerror(error) {
     console.log(error);
@@ -224,16 +268,12 @@ export class SigninComponent implements OnInit {
     console.log(`Drop Down selected index changed from ${args.oldIndex} to ${args.newIndex}`);
   }
 
-  public onopen() {
-    console.log("Drop Down opened.");
-  }
+  public onopen() {  }
 
-  public onclose() {
-    console.log("Drop Down closed.");
-  }
+  public onclose() {  }
 
-  navigateHome(): any {
-    this.routerExtensions.navigate(["home"], {
+  navigateHome() {
+    this.routerExtensions.navigate(["/home"], {
       transition: {
         name: "fade"
       }
@@ -241,7 +281,6 @@ export class SigninComponent implements OnInit {
   }
 
   successForgotPwd(success) {
-    console.log(success);
     alert({
       title: "On d Vay",
       message: "Your password was successfully reset. Please check your email for instructions on choosing a new password.",
@@ -271,5 +310,4 @@ export class SigninComponent implements OnInit {
       }
     });
   }
-
 }

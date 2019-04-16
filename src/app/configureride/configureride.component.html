@@ -15,30 +15,34 @@
 </ActionBar>
 
 <FlexboxLayout class="page">
-    <StackLayout class="form" style="padding:30">
+    <StackLayout class="form" style="margin-top:10">
 
-        <StackLayout class="input-field" style="margin-bottom:20">
+        <StackLayout class="input-field">
+            <label text="Contact Number"></label>
             <TextField class="input" hint="Enter ContactNo" type="number" autocorrect="false" autocapitalizationType="none"
-                returnKeyType="next"></TextField>
+                returnKeyType="next" style="padding:10" [(ngModel)]="configure.ContactNumber"></TextField>
             <StackLayout class="hr-light"></StackLayout>
         </StackLayout>
 
-        <StackLayout class="input-field" style="margin-bottom:20">
+        <StackLayout class="input-field">
+                <label text="Vechile Name"></label>
             <TextField class="input" hint="Enter Vechile Name" autocorrect="false" autocapitalizationType="none"
-                returnKeyType="next"></TextField>
+                returnKeyType="next" style="padding:10"  [(ngModel)]="configure.VechileName"></TextField>
             <StackLayout class="hr-light"></StackLayout>
         </StackLayout>
 
-        <StackLayout class="input-field" style="margin-bottom:20">
+        <StackLayout class="input-field">
+                <label text="Vechile Number"></label>
             <TextField class="input" hint="Enter Vechile Number"  autocorrect="false" autocapitalizationType="none"
-                returnKeyType="next"></TextField>
+                returnKeyType="next" style="padding:10" [(ngModel)]="configure.VechileNumber"></TextField>
             <StackLayout class="hr-light"></StackLayout>
         </StackLayout>
 
-        <StackLayout class="input-field" style="margin-bottom:20">
+        <StackLayout class="input-field">
+            <label text="Price"></label>
             <TextField class="input" hint="Enter Price for 1km"
-            autocorrect="false" autocapitalizationType="none"
-            returnKeyType="next"></TextField>
+            autocorrect="false" autocapitalizationType="none" 
+            returnKeyType="next" style="padding:10" [(ngModel)]="configure.Price"></TextField>
             <StackLayout class="hr-light"></StackLayout>
         </StackLayout>
         

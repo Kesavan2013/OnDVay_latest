@@ -20,15 +20,12 @@
             class="list-group">
             <ng-template let-dataitem="item" let-i="index" let-third="third"
                 let-header="header" let-footer="footer">
-                <GridLayout class="list-group-item" columns="auto,*" rows="auto,auto,auto,*">
-                    <Image stretch="none" width="70" height="70" [src]="dataitem.profilePhoto"
+                <GridLayout class="list-group-item" padding="10" columns="auto,*" rows="auto,auto,auto,*">
+                    <Image height="50" width="50" [src]="dataitem.profilePhoto"
                         row="0" col="0" rowSpan="3" style="margin-right:20"></Image>
-                    <Label [text]="dataitem.name" row="0" col="1"
-                        android:class="label-item"></Label>
-                    <Label [text]="dataitem.distance" row="1" col="1"
-                        android:class="label-item"></Label>
-                    <Label [text]="dataitem.status" row="2" col="1"
-                        android:class="label-item"></Label>
+                    <Label [text]="dataitem.name" row="0" col="1"></Label>
+                    <Label [text]="dataitem.distance" row="1" col="1"></Label>
+                    <Label [text]="dataitem.status" row="2" col="1"></Label>
                 </GridLayout>
             </ng-template>
         </ListView>

@@ -6,6 +6,8 @@ import { BikePoolService } from "../shared/bikepoolservice"
 import { ServiceURL } from "../shared/services";
 import * as ApplicationSettings from "application-settings";
 import * as Geolocation from "nativescript-geolocation";
+import { LoadingScreen } from 'nativescript-loading-screen';
+import { alert, prompt } from "tns-core-modules/ui/dialogs";
 
 class RidersItem {
   constructor(public name: string,
@@ -20,6 +22,7 @@ class RidersItem {
 })
 export class RiderListComponent implements OnInit {
 
+  private loadingScreen: LoadingScreen;
   public dataItems: Array<RidersItem>;
   fromLat: string;
   fromLong: string;
@@ -27,9 +30,7 @@ export class RiderListComponent implements OnInit {
   noRidersAvail : boolean;
 
   RidersListSuccess(riders) {
-
-    this.showLoader = false;
-
+    
     for (let ride = 0; ride < riders.Data.length; ride++) {
       if(riders.Data[ride].userid != ApplicationSettings.getString("userid"))
       {
@@ -46,6 +47,8 @@ export class RiderListComponent implements OnInit {
     {
       this.noRidersAvail = true;
     }
+
+    this.hideLoader();
   }
 
   CalculateDistance(lat, long): any {
@@ -63,18 +66,33 @@ export class RiderListComponent implements OnInit {
 
   RiderListError(error) {
     this.showLoader = false;
+    this.hideLoader();
   }
   constructor(private bikepoolservice: BikePoolService) {    
   }
 
   ngOnInit() {
+    this.loadingScreen = new LoadingScreen();
     this.dataItems = [];
     this.showLoader = true;
+    this.LoaderShow();
         this.bikepoolservice.PostService(ServiceURL.RideUsers, null).subscribe(
           riders => this.RidersListSuccess(riders),
           error => this.RiderListError(error)
         )
   }
+
+  hideLoader() {
+    //this.loader.hide();
+    this.loadingScreen.close();
+}
+
+LoaderShow() {
+    //this.loader.show(this.options);
+    this.loadingScreen.show({
+        message: "Loading..."
+    });
+}
 
   onDrawerButtonTap(): void {
     const sideDrawer = <RadSideDrawer>app.getRootView();
@@ -91,10 +109,10 @@ export class RiderListComponent implements OnInit {
       rideDistance : ApplicationSettings.getString("ridedistance"),
       currentLocation : ApplicationSettings.getString("currentlocation"),
       destinationLocation : ApplicationSettings.getString("tolocation"),
-      deviceToken : selectedRider.devicetoken
+      deviceToken : selectedRider.devicetoken,      
     }
 
-    console.log(objRideStatus);
+    this.LoaderShow();
 
     this.bikepoolservice.PostService(ServiceURL.RequestForRide,objRideStatus).subscribe(
       success =>this.RideStatusSuccess(success),
@@ -102,19 +120,20 @@ export class RiderListComponent implements OnInit {
     )
   }
 
-  RideStatusSuccess(response)
-  {
-    console.log(response);
+  RideStatusSuccess(response){
+    this.hideLoader();
+    alert({
+      title: "On d Vay",
+      message: "Request has been placed for ride",
+      okButtonText: "Ok"
+    })
   }
 
-  RideStatusError(error)
-  {
-    console.log(error);
+  RideStatusError(error){
+    this.hideLoader();
   }
 
-  onRiderItemTap(item: RidersItem) {
-    console.log(item);
-  }
+  onRiderItemTap(item: RidersItem) {}
 
   onSetupItemView(args: SetupItemViewArgs) {
     args.view.context.third = (args.index % 3 === 0);

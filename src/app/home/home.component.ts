@@ -16,7 +16,9 @@ const firebase = require("nativescript-plugin-firebase");
 import * as ApplicationSettings from "application-settings";
 import { Router, NavigationExtras } from "@angular/router";
 import { TabView, TabViewItem } from "tns-core-modules/ui/tab-view";
-
+import { offer } from "../shared/models/offerride";
+import { DateTimePicker } from "nativescript-datetimepicker";
+import { LoadingScreen } from 'nativescript-loading-screen';
 
 @Component({
     selector: "Home",
@@ -25,7 +27,7 @@ import { TabView, TabViewItem } from "tns-core-modules/ui/tab-view";
 })
 export class HomeComponent implements OnInit {
 
-    currentLocation: string = "Triplicane";
+    currentLocation: string = "";
     items: any;
     searchPhrase: string;
     FromLat: string;
@@ -34,27 +36,45 @@ export class HomeComponent implements OnInit {
     ToLong: string;
     totalRideDistance: any;
     showLoader: boolean;
+    offer: any;
+    StartTime: any;
+    VehicleType: any;
+    userlatitude: any;
+    userlongtitude: any;
+    private loadingScreen: LoadingScreen;
 
     constructor(private bikepoolservice: (BikePoolService), private routerExtensions: RouterExtensions,
         private router: Router, private zone: NgZone) {
         // Use the component constructor to inject providers.
+        this.loadingScreen = new LoadingScreen();
+    }
+
+    hideLoader() {
+        //this.loader.hide();
+        this.loadingScreen.close();
+    }
+
+    LoaderShow() {
+        //this.loader.show(this.options);
+        this.loadingScreen.show({
+            message: "Loading..."
+        });
     }
 
     ngOnInit(): void {
 
-        //this.ClearRideSettings();
+        // Init your component properties here.
         this.items = [];
         this.items.push("Car");
         this.items.push("Bike");
 
+        this.offer = new offer();
+
         // call setDatePickerTime method
         this.setDatePickerTime();
-
-        // Init your component properties here.
+        this.LoaderShow();
         let location = this.getDeviceLocation();
-
         this.InitFireBasePlugIn();
-
         this.updateStatusAvail();
     }
 
@@ -130,13 +150,15 @@ export class HomeComponent implements OnInit {
                 //     console.log("Message received when inside the app");
                 // }
             },
-            onAuthStateChanged: (data: any) => {
-                console.log(JSON.stringify(data))
+            onAuthStateChanged: (data: any) => {                
+                console.log("dataError" + JSON.stringify(data))
                 if (data.loggedIn) {
                     ApplicationSettings.setString("userid", data.user.uid);
+                    ApplicationSettings.setString("email",data.user.email);
+                    ApplicationSettings.setString("username",data.user.name);
+                    ApplicationSettings.setString("profileImageURL",data.user.profileImageURL);
                 }
-                else {
-                    ApplicationSettings.remove("userid");
+                else {                    
                     console.log("OnAuthState" + data);
                 }
             }
@@ -151,13 +173,6 @@ export class HomeComponent implements OnInit {
             );
     }
 
-    onDatePickerLoaded(data: EventData) {
-
-    }
-
-    userlatitude: any;
-    userlongtitude: any;
-
     private getDeviceLocation(): Promise<any> {
         return new Promise((resolve, reject) => {
             Geolocation.enableLocationRequest().then(() => {
@@ -166,7 +181,9 @@ export class HomeComponent implements OnInit {
                     // Call updateDeviceLocation method
                     this.userlatitude = location.latitude;
                     this.userlongtitude = location.longitude;
-                    this.updateDeviceLocation(location.latitude, location.longitude);
+                    this.updateDeviceLocation(13.061140,80.282478);
+                   // this.updateDeviceLocation(location.latitude, location.longitude);
+                    this.hideLoader();
                 }).catch(error => {
                     reject(error);
                 });
@@ -175,6 +192,7 @@ export class HomeComponent implements OnInit {
     }
 
     updateDeviceLocation(lat, long) {
+        this.LoaderShow();
         this.FromLat = lat; this.FromLong = long;
         let formURL = "?prox=" + lat + "," + long;
         this.bikepoolservice.GetAddress(formURL).subscribe(
@@ -183,28 +201,32 @@ export class HomeComponent implements OnInit {
     }
 
     handleSuccessDeviceLoc(success) {
+        this.hideLoader();
         let objResult = success.Response.View[0].Result[0];
         this.currentLocation = objResult.Location.Address.Label;
+        this.offer.PickLocation = objResult.Location.Address.Label;
         this.FromLat = objResult.Location.DisplayPosition.Latitude;
         this.FromLong = objResult.Location.DisplayPosition.Longitude;
         ApplicationSettings.setString("fromlat", this.FromLat.toString());
         ApplicationSettings.setString("fromlong", this.FromLong.toString());
     }
 
-    handleErrorDeviceLoc(error) { }
+    handleErrorDeviceLoc(error) { this.hideLoader(); }
 
     public onSubmit(args) {
+        this.LoaderShow();
         let searchBar = <SearchBar>args.object;
         this.bikepoolservice.GetAddressAC(searchBar.text).subscribe(
             ac => this.handleACSuccess(ac),
             error => this.handleACError(error))
     }
 
-    setRideSettings() {}
+    setRideSettings() { }
 
-    ClearRideSettings() {}
+    ClearRideSettings() { }
 
     handleACSuccess(success) {
+        this.hideLoader();
         let objResult = success.Response.View[0].Result[0];
         this.searchPhrase = objResult.Location.Address.Label;
         this.ToLat = objResult.Location.DisplayPosition.Latitude;
@@ -214,7 +236,7 @@ export class HomeComponent implements OnInit {
         this.CalculateDistance();
     }
 
-    handleACError(error) { }
+    handleACError(error) { this.hideLoader(); }
 
     public onTextChanged(args) {
         let searchBar = <SearchBar>args.object;
@@ -246,6 +268,7 @@ export class HomeComponent implements OnInit {
     onFindRiders(event) {
         //this.setRideSettings();
         if (this.searchPhrase != undefined && this.searchPhrase != '') {
+            ApplicationSettings.setString("ridetime", this.selectedRideTime.toString());
             this.routerExtensions.navigate(["/riderslist"], { clearHistory: true });
         }
         else {
@@ -319,5 +342,42 @@ export class HomeComponent implements OnInit {
     distanceerror(error) {
         this.showLoader = false;
         console.log(error);
+    }
+
+    submitOfferSuccess(success) {
+        this.showLoader = false;
+        //this.offer = new offer();
+        dialogs.alert({
+            title: "On d Vay",
+            message: "Ride Offer Received !",
+            okButtonText: "ok"
+        });
+    }
+
+    submitOfferError(error) {
+        console.log(error);
+        this.showLoader = false;
+    }
+
+    submitOfferRide(event) {
+        console.log(this.offer);
+        this.offer.userId = ApplicationSettings.getString("userid");
+        this.offer.VehicleTypeText = this.items[this.offer.VechileType];      
+        this.offer.DropLocation = this.searchPhrase;
+        this.offer.offerRide = true;  
+        this.offer.latitude = parseFloat(this.FromLat);
+        this.offer.longitude = parseFloat(this.FromLong);
+        let minutes = (this.offer.StartTime.getMinutes().toString().length == 1) ?
+            "0" + this.offer.StartTime.getMinutes().toString() :
+            this.offer.StartTime.getMinutes().toString();
+        this.offer.StartTime = this.offer.StartTime.getHours() + " : " + minutes;
+        this.offer.UserName = ApplicationSettings.getString("email");
+        var objOffer = { OfferRide: this.offer };
+
+        this.showLoader = true;
+        this.bikepoolservice.PostService(ServiceURL.OfferRide, objOffer).subscribe(
+            success => this.submitOfferSuccess(success),
+            error => this.submitOfferError(error)
+        )
     }
 }

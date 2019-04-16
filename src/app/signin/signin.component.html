@@ -3,15 +3,15 @@
         Use the NavigationButton as a side-drawer button in Android
         because ActionItems are shown on the right side of the ActionBar
         -->
-    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+    <!-- <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton> -->
     <!-- 
         Use the ActionItem for IOS with position set to left. Using the
         NavigationButton as a side-drawer button in iOS is not possible,
         because its function is to always navigate back in the application.
         -->
-    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
-    </ActionItem>
-    <Label class="action-bar-title" text="Login"></Label>
+    <!-- <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
+    </ActionItem> -->
+    <Label class="action-bar-title" [text]="isLoggingIn ? 'LOGIN' : 'SIGNUP'"></Label>
 </ActionBar>
 
 
@@ -19,7 +19,7 @@
     <StackLayout class="form">
 
         <StackLayout class="input-field" *ngIf="!isLoggingIn">
-            <TextField class="input" hint="UserName" autocorrect="false" autocapitalizationType="none" [(ngModel)]="user.username"
+            <TextField #username class="input" hint="UserName" autocorrect="false" autocapitalizationType="none" [(ngModel)]="user.username"
                 returnKeyType="next"></TextField>
             <StackLayout class="hr-light"></StackLayout>
         </StackLayout>
@@ -36,10 +36,14 @@
         </StackLayout>
 
         <!-- <StackLayout class="input-field" *ngIf="!isLoggingIn">
-            <TextField #password class="input" hint="Confirm Password" secure="true" [returnKeyType]="isLoggingIn ? 'done' : 'next'"
-                [(ngModel)]="user.confirmpassword"></TextField>
+            <TextField class="input" hint="Company Name" [returnKeyType]="isLoggingIn ? 'done' : 'next'" [(ngModel)]="user.companyname"></TextField>
             <StackLayout class="hr-light"></StackLayout>
         </StackLayout> -->
+
+        <StackLayout class="input-field" *ngIf="!isLoggingIn">
+            <TextField class="input" hint="Phone Number" [returnKeyType]="isLoggingIn ? 'done' : 'next'" [(ngModel)]="user.phonenumber"></TextField>
+            <StackLayout class="hr-light"></StackLayout>
+        </StackLayout>
         
         <Button [text]="isLoggingIn ? 'Log In' : 'Sign Up'" (tap)="submit()" class="btn btn-primary"></Button>                    
 
@@ -50,14 +54,14 @@
 
         <Label *ngIf="isLoggingIn" text="Forgot your password?" class="login-label" (tap)="forgotPassword()"></Label>
 
-        <ActivityIndicator [busy]="isAuthenticating" rowSpan="2"></ActivityIndicator>
+        <!-- <ActivityIndicator [busy]="isAuthenticating" rowSpan="2"></ActivityIndicator> -->
 
     </StackLayout>
 
     <Label class="login-label sign-up-label" (tap)="toggleForm()">
         <FormattedString>
             <Span [text]="isLoggingIn ? 'Don t have an account? ' : 'Back to Login'"></Span>
-            <Span [text]="isLoggingIn ? 'Sign up' : ''" class="bold"></Span>
+            <Span [text]="isLoggingIn ? 'Signup' : ''" class="bold"></Span>
         </FormattedString>
     </Label>
 </FlexboxLayout>

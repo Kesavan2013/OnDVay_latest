@@ -3,7 +3,7 @@ import { Routes } from "@angular/router";
 import { NativeScriptRouterModule } from "nativescript-angular/router";
 
 const routes: Routes = [
-    { path: "", redirectTo: "/home", pathMatch: "full" },
+    { path: "", redirectTo: "/signin", pathMatch: "full" },
     { path: "home", loadChildren: "~/app/home/home.module#HomeModule" },
     { path: "myrides", loadChildren: "~/app/myrides/myrides.module#MyridesModule" },
     { path: "rideinfo", loadChildren: "~/app/rideinfo/rideinfo.module#RideInfoModule" },    

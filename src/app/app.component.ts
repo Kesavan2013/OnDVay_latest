@@ -12,6 +12,8 @@ import { ServiceURL } from "./shared/services";
 import * as Connectivity from "tns-core-modules/connectivity";
 import * as Toast from "nativescript-toast";
 import { alert, prompt } from "tns-core-modules/ui/dialogs";
+import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
+
 
 @Component({
     moduleId: module.id,
@@ -21,8 +23,12 @@ import { alert, prompt } from "tns-core-modules/ui/dialogs";
 export class AppComponent implements OnInit {
     private _activatedUrl: string;
     private _sideDrawerTransition: DrawerTransitionBase;
-    appLoggedIn: boolean = false;
+    private appLoggedIn: boolean = false;
     public connectionType: string;
+    private profileImage : any;
+    private username : string;
+    private email : string;
+    private loggedIn : boolean;
     
     constructor(private router: Router, private routerExtensions: RouterExtensions,
         private bikepoolservice:BikePoolService,private zone: NgZone) {
@@ -36,10 +42,6 @@ export class AppComponent implements OnInit {
         this.router.events
             .pipe(filter((event: any) => event instanceof NavigationEnd))
             .subscribe((event: NavigationEnd) => this.ActivateURL(event));
-
-        if (ApplicationSettings.getString("userid") != null) {
-            this.loggedIn = true;
-        }
 
         this.connectionType = this.connectionToString(Connectivity.getConnectionType());
         Connectivity.startMonitoring(connectionType => {
@@ -57,63 +59,10 @@ export class AppComponent implements OnInit {
             });
         });
     }
-
-    public connectionToString(connectionType: number): string {
-        switch(connectionType) {
-            case Connectivity.connectionType.none:
-                return "Please Check Your Internet Connection";
-            // case Connectivity.connectionType.wifi:
-            //     return "Connected to WiFi!";
-            // case Connectivity.connectionType.mobile:
-            //     return "Connected to Cellular!";
-            default:
-                 return "";
-        }
-    }
-
-    // CheckInternetConnection(){
-    //     connectivityModule.startMonitoring((newConnectionType) => {
-    //         switch (newConnectionType) {
-    //             case connectivityModule.connectionType.none:
-    //                 console.log("Connection type changed to none.");
-    //                 break;
-    //             case connectivityModule.connectionType.wifi:
-    //                 console.log("Connection type changed to WiFi.");
-    //                 break;
-    //             case connectivityModule.connectionType.mobile:
-    //                 console.log("Connection type changed to mobile.");
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //     });
-    // }
-
-    profileImage : any;
-    username : string;
-    email : string;
-    loggedIn : boolean;
+    
     ActivateURL(event:NavigationEnd)
     {
-        this._activatedUrl = event.urlAfterRedirects;
-
-        if(ApplicationSettings.getString("userid") != null)
-        {
-            this.loggedIn = true;
-            this.profileImage = ApplicationSettings.getString("profileImage");
-            this.email = ApplicationSettings.getString("email");
-            this.username = ApplicationSettings.getString("username");
-        }
-        else{
-            this.loggedIn = false;
-            this.username = "Welcome Guest!";
-            this.email = "";
-
-            ApplicationSettings.remove("profileImage");
-            ApplicationSettings.remove("email");
-            ApplicationSettings.remove("username");
-        }
-        
+        this._activatedUrl = event.urlAfterRedirects;        
     }
 
     get sideDrawerTransition(): DrawerTransitionBase {
@@ -121,6 +70,13 @@ export class AppComponent implements OnInit {
     }
 
     isComponentSelected(url: string): boolean {
+
+        if(ApplicationSettings.getString("userid") != null){
+            this.profileImage = ApplicationSettings.getString("profileImageURL");
+            this.email = ApplicationSettings.getString("email");
+            this.username = ApplicationSettings.getString("username");
+        }
+
         return this._activatedUrl === url;
     }
 
@@ -130,52 +86,46 @@ export class AppComponent implements OnInit {
                 name: "fade"
             }
         });
-
-        const sideDrawer = <RadSideDrawer>app.getRootView();
-        sideDrawer.closeDrawer();
+        this.closeDrawer();
     }
 
     LogoutSuccess(success)
     {
+        this.closeDrawer();
         this.loggedIn = false;
-        this.username = "Welcome Guest!";
+        this.username = "";
         this.email = "";        
         firebase.logout();
         this.routerExtensions.navigate(["signin"], {
             transition: {
-                name: "fade"
+                name: "push"
             }
         });
     }
 
-    LogoutError(error)
-    {
-
-    }
+    LogoutError(error) { }
 
     Logout() {
+        this.closeDrawer();
+        this.loggedIn = false;
+        this.username = "Welcome Guest!";
+        this.email = "";        
+        firebase.logout();
+        ApplicationSettings.remove("userid");
+        this.router.navigate(["/signin"]);        
+    }
 
-        try{
-            this.loggedIn = false;
-            this.username = "Welcome Guest!";
-            this.email = "";        
-            firebase.logout();
-            this.routerExtensions.navigate(["signin"], {
-                transition: {
-                    name: "fade"
-                }
-            });
-        }
-        catch(e)
-        {
-            console.log(e);
-        }
-        
+    closeDrawer(){
+        const sideDrawer = <RadSideDrawer>app.getRootView();
+        sideDrawer.closeDrawer();
+    }
 
-        // var objUserId = {userid : ApplicationSettings.getString("userid")};
-        // this.bikepoolservice.PostService(ServiceURL.DeleteLogOutUser,objUserId).subscribe(
-        //     success => this.LogoutSuccess(success),
-        //     error => this.LogoutError(error)
-        // )
+    public connectionToString(connectionType: number): string {
+        switch(connectionType) {
+            case Connectivity.connectionType.none:
+                return "Please Check Your Internet Connection";            
+            default:
+                 return "";
+        }
     }
 }

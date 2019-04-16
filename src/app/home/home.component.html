@@ -11,54 +11,70 @@
     -->
     <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
     </ActionItem>
-    <Label class="action-bar-title" text="Home"></Label>
+    <Label class="action-bar-title" text="Home"></Label>    
 </ActionBar>
 
 <StackLayout aria-orientation="vertical" padding="10">
 
     <TabView>
-        <StackLayout *tabItem="{title: 'Find Riders'}">
-            <GridLayout rows="auto, auto" columns="auto,*" padding="10">
-                <Image row="0" col="0" height="25" width="25" src="http://maps.google.com/mapfiles/ms/micons/blue.png"></Image>
-                <label row="0" col="1" colSpan="1" hint="Current Location" fontSize="18" [text]="currentLocation">
+        <StackLayout *tabItem="{title: 'Find Riders'}">                
+            <GridLayout rows="auto,auto, auto" columns="auto,*">
+                    <label row="0" text="From Location" style="margin-bottom:5"></label>
+                <!-- <Image row="1" col="0" height="25" width="25" src="http://maps.google.com/mapfiles/ms/micons/blue.png"></Image> -->
+                <label row="1" col="0" hint="Current Location" style="margin-bottom:20" fontSize="18" [text]="currentLocation">
                 </label>
             </GridLayout>
 
-            <StackLayout class="hr-light"></StackLayout>
+            <!-- <StackLayout class="hr-light"></StackLayout> -->
 
-            <SearchBar padding="10" hint="Search Location" [text]="searchPhrase" (textChange)="onTextChanged($event)" (submit)="onSubmit($event)"
+            <label text="Drop Location"></label>
+            <SearchBar padding="10" hint="Search Location" style="margin-bottom:20" [text]="searchPhrase" (textChange)="onTextChanged($event)" (submit)="onSubmit($event)"
                 (selectedIndexChanged)="onchange($event)" (opened)="onopen()" (closed)="onclose()" color="black"></SearchBar>
 
-            <StackLayout orientation="Vertical" style="margin-top:20">
+            <StackLayout orientation="Vertical">
                 <label text="Distance (kms)"></label>
                 <label [text]="totalRideDistance" fontSize="18" padding="13"></label>
             </StackLayout>
 
-            <StackLayout orientation="Vertical">
+            <StackLayout orientation="Vertical" style="margin-bottom:20">
                 <Label text="Vehicle Type"></Label>
                 <DropDown #dd class="dropdown" hint="Select Vehicle Type" fontSize="25" [items]="items" [(ngModel)]="selectedIndex"></DropDown>
             </StackLayout>
+            
 
-            <StackLayout orientation="Vertical" style="margin-top:20">
+            <StackLayout orientation="Vertical" style="margin-bottom:10">
                 <label text="Ride Pick Up Time"></label>
-                <TimePicker style="margin-top:-20" (loaded)="onPickerLoaded($event)" (timeChange)="onTimeChanged($event)" verticalAlignment="center"
-                    class="m-15"></TimePicker>
+                <TimePickerField [(ngModel)]="selectedRideTime" hint="Select Time"></TimePickerField>                
             </StackLayout>
+
             <Button class="btn btn-primary btn-active" id="button" text="Find Riders" (tap)="onFindRiders($event)"></Button>
+            
         </StackLayout>
         <StackLayout *tabItem="{title: 'Offer Rides'}">
-            <StackLayout>
-                <TextField class="input" hint="From Location" autocorrect="false" autocapitalizationType="none" 
-                returnKeyType="next"></TextField>
-                <StackLayout class="hr-light"></StackLayout>
+            <StackLayout style="margin-top:10">
 
-                <TextField class="input" hint="To Location" autocorrect="false" autocapitalizationType="none" 
-                returnKeyType="next"></TextField>
-                <StackLayout class="hr-light"></StackLayout>
+                <label text="Pick Location"></label>
+                <label hint="Enter Pickup Location" [text]="offer.PickLocation" style="margin-bottom:20;font-size: 18"></label>                
 
-                <TextField class="input" hint="Start Time" autocorrect="false" autocapitalizationType="none" 
-                returnKeyType="next"></TextField>
-                <StackLayout class="hr-light"></StackLayout>
+                <label text="Drop Location"></label>
+                <SearchBar padding="10" hint="Search Location" style="margin-bottom:20" [text]="searchPhrase" (textChange)="onTextChanged($event)" (submit)="onSubmit($event)"
+                (selectedIndexChanged)="onchange($event)" (opened)="onopen()" (closed)="onclose()" color="black"></SearchBar>
+
+                <!-- <StackLayout orientation="Vertical">
+                    <label text="Distance (kms)"></label>
+                    <label [text]="offer.totalRideDistance" fontSize="18" padding="13"></label>
+                </StackLayout> -->
+
+                <label text="Vechile Type"></label>
+                <DropDown class="dropdown input" style="margin-bottom:20" hint="Select Vehicle Type" fontSize="25" 
+                [items]="items" returnKeyType="next" [(ngModel)]="offer.VechileType"></DropDown>
+
+                <Label text="Start Time"></Label>                    
+                <TimePickerField hint="Select Time" style="margin-bottom:20" [(ngModel)]="offer.StartTime"></TimePickerField>
+
+                <Button class="btn btn-primary btn-active" id="button" 
+                text="Offer Ride" (tap)="submitOfferRide($event)"></Button>
+                
             </StackLayout>
         </StackLayout>
     </TabView>
