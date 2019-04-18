@@ -1,7 +1,6 @@
 export enum ServiceURL {
     searchLocation = 1,
-    RideStatus = "/RideStatus",
-    UpdateUserLocation = "RideUpdateUserLocation",
+    RideStatus = "/RideStatus",    
     RequestForRide = "/RequestForRide",    
     GetMyRide = "/GetMyRide",
     RideUsers = "/RideUsers",
@@ -14,5 +13,6 @@ export enum ServiceURL {
     OfferRide = "/OfferRide",
     ConfigureRider = "/ConfigureRider",
     GetCongfigureRider = "/GetCongfigureRider",
-    GetUser = "/GetUser"
+    GetUser = "/GetUser",
+    UpdateDeviceToken = "/UpdateDeviceId"
 }

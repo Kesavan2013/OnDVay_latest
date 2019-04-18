@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
     public connectionType: string;
     private profileImage : any;
     private username : string;
-    private email : string;
+    private email : string="";
     private loggedIn : boolean;
     
     constructor(private router: Router, private routerExtensions: RouterExtensions,

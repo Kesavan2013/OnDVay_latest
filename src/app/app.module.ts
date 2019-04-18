@@ -9,7 +9,6 @@ import {BikePoolService} from "./shared/bikepoolservice";
 import { MyridesComponent } from './myrides/myrides.component';
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { NativeScriptDateTimePickerModule } from "nativescript-datetimepicker/angular";
-import { RadioButtonModule } from 'nativescript-radiobutton/angular'
 
 
 @NgModule({
@@ -24,7 +23,6 @@ import { RadioButtonModule } from 'nativescript-radiobutton/angular'
         DropDownModule,
         HttpClientModule,        
         NativeScriptDateTimePickerModule,
-        RadioButtonModule      
     ],
     declarations: [
         AppComponent

@@ -7,8 +7,8 @@ import * as ApplicationSettings from "application-settings";
 import { LoadingScreen } from 'nativescript-loading-screen';
 
 class RideHistory {
-  constructor(public rideTime: string, public rideDistance: string, public rideFromLocation: string,
-    public rideToLocation: string) { }
+  constructor(public DropLocation: string, public PickLocation: string, public StartTime: string,
+    public VehicleTypeText: string,public rideTaken:string) { }
 }
 
 @Component({
@@ -45,10 +45,11 @@ export class MyridesComponent implements OnInit {
     if (objRides.length > 0) {
       for (let i = 0; i <= objRides.length; i++) {
         let ridehistory = new RideHistory(
-          objRides[i].rideStartTime,
-          objRides[i].rideDistance,
-          objRides[i].rideFromLocation,
-          objRides[i].rideToLocation
+          objRides[i].DropLocation,
+          objRides[i].PickLocation,
+          objRides[i].StartTime,
+          objRides[i].VehicleTypeText,
+          objRides[i].rideTaken = (objRides[i].offerRide == true) ? "Ride Offered" : "Ride Requested"
         )
         this.rideHistoryItem.push(ridehistory);
       }

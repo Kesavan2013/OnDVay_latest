@@ -40,12 +40,15 @@ export class ConfigurerideComponent implements OnInit {
 
 	getConfigureRideSuccess(configure)
 	{
-		var objConfigure = configure.Data;				
-		this.configure.ContactNumber = objConfigure.ContactNumber;
-		this.configure.Price = objConfigure.Price;
-		this.configure.VechileName = objConfigure.VechileName;
-		this.configure.VechileNumber = objConfigure.VechileNumber;		
-		this.hideLoader();
+		this.hideLoader();		
+		if(configure.success)
+		{			
+			let objConfigure = configure.Data;
+			this.configure.ContactNumber = objConfigure.ContactNumber;
+			this.configure.Price = objConfigure.Price;
+			this.configure.VechileName = objConfigure.VechileName;
+			this.configure.VechileNumber = objConfigure.VechileNumber;				
+		}
 	}
 
 	saveConfigure(){

@@ -5,7 +5,7 @@ import { NativeScriptDateTimePickerModule } from "nativescript-datetimepicker/an
 import { DropDownModule } from "nativescript-drop-down/angular";
 import { HomeRoutingModule } from "./home-routing.module";
 import { HomeComponent } from "./home.component";
-import { RadioButtonModule } from 'nativescript-radiobutton/angular'
+
 
 @NgModule({
     imports: [
@@ -13,8 +13,7 @@ import { RadioButtonModule } from 'nativescript-radiobutton/angular'
         HomeRoutingModule,
         NativeScriptFormsModule,
         NativeScriptDateTimePickerModule,
-        DropDownModule,
-        RadioButtonModule
+        DropDownModule
     ],
     declarations: [
         HomeComponent

@@ -20,15 +20,31 @@
             class="list-group">
             <ng-template let-dataitem="item" let-i="index" let-third="third"
                 let-header="header" let-footer="footer">
-                <GridLayout class="list-group-item" columns="auto" rows="auto,auto,auto,*">                    
-                    <Label [text]="dataitem.rideFromLocation" row="0" col="0"
+                <GridLayout class="list-group-item" columns="auto" rows="auto,auto,auto,auto,*">  
+                    <StackLayout row="0" col="0" orientation="vertical" style="margin-bottom:8">
+                        <label text="PickUp Location"></label>
+                        <Label style="font-size: 20" [text]="dataitem.PickLocation" 
                         android:class="label-item"></Label>
-                    <Label [text]="dataitem.rideToLocation" row="1" col="0"
+                    </StackLayout>        
+                    
+                    <StackLayout row="1" col="0" orientation="vertical" style="margin-bottom:8">
+                        <label text="Drop Location"></label>
+                        <Label style="font-size: 20" [text]="dataitem.DropLocation" 
                         android:class="label-item"></Label>
-                    <Label [text]="dataitem.rideTime" row="2" col="0"
+                    </StackLayout>
+                    
+                    
+                    <StackLayout row="2" col="0" orientation="vertical" style="margin-bottom:8">
+                        <label text="Ride Start Time"></label>
+                        <Label style="font-size: 20" [text]="dataitem.StartTime" 
                         android:class="label-item"></Label>
-                        <Label [text]="dataitem.rideDistance" row="3" col="0"
+                    </StackLayout>                    
+                    
+                    <StackLayout row="4" col="0" orientation="vertical" style="margin-bottom:8">
+                        <label text="Ride Status"></label>
+                        <Label style="font-size: 20" [text]="dataitem.rideTaken" 
                         android:class="label-item"></Label>
+                    </StackLayout>
 
                 </GridLayout>
             </ng-template>

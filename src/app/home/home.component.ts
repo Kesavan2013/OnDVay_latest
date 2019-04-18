@@ -19,6 +19,7 @@ import { TabView, TabViewItem } from "tns-core-modules/ui/tab-view";
 import { offer } from "../shared/models/offerride";
 import { DateTimePicker } from "nativescript-datetimepicker";
 import { LoadingScreen } from 'nativescript-loading-screen';
+import { stringify } from "@angular/core/src/render3/util";
 
 @Component({
     selector: "Home",
@@ -41,7 +42,9 @@ export class HomeComponent implements OnInit {
     VehicleType: any;
     userlatitude: any;
     userlongtitude: any;
-    private loadingScreen: LoadingScreen;
+    selectedIndex : any;
+    selectedRideTime: any;
+    private loadingScreen: LoadingScreen;    
 
     constructor(private bikepoolservice: (BikePoolService), private routerExtensions: RouterExtensions,
         private router: Router, private zone: NgZone) {
@@ -107,7 +110,8 @@ export class HomeComponent implements OnInit {
                     userid: ApplicationSettings.getString("userid"),
                     longitude: this.FromLat,
                     latitude: this.FromLong,
-                    status: Status
+                    status: Status,
+                    deviceToken : ApplicationSettings.getString("device_token")
                 }
 
             this.bikepoolservice.PostService(ServiceURL.RideUpdateUserLocation, objUpdateUserLocation).subscribe(
@@ -123,8 +127,8 @@ export class HomeComponent implements OnInit {
             persist: false,
             url: "https://metroapplicationproject.firebaseio.com",
             onPushTokenReceivedCallback: function (token) {
-                ApplicationSettings.setString('device_token', token);
-                console.log('device token: ', token); // <-- add this
+                ApplicationSettings.setString('device_token', token);    
+                console.log("deviceToken"+ ApplicationSettings.getString('device_token'))           
             },
             onMessageReceivedCallback: (message: any) => {
                 let objNotificationMessage = message.data.value;
@@ -181,8 +185,8 @@ export class HomeComponent implements OnInit {
                     // Call updateDeviceLocation method
                     this.userlatitude = location.latitude;
                     this.userlongtitude = location.longitude;
-                    this.updateDeviceLocation(13.061140,80.282478);
-                   // this.updateDeviceLocation(location.latitude, location.longitude);
+                    //this.updateDeviceLocation(13.061140,80.282478);
+                    this.updateDeviceLocation(location.latitude, location.longitude);
                     this.hideLoader();
                 }).catch(error => {
                     reject(error);
@@ -266,10 +270,9 @@ export class HomeComponent implements OnInit {
     }
 
     onFindRiders(event) {
-        //this.setRideSettings();
+        //this.setRideSettings();        
         if (this.searchPhrase != undefined && this.searchPhrase != '') {
-            ApplicationSettings.setString("ridetime", this.selectedRideTime.toString());
-            this.routerExtensions.navigate(["/riderslist"], { clearHistory: true });
+            this.RequestRide();
         }
         else {
             alert({
@@ -293,8 +296,6 @@ export class HomeComponent implements OnInit {
         this.selectedRideTime = timePicker.hour + timePicker.minute + periodian;
         ApplicationSettings.setString("ridetime", this.selectedRideTime);
     }
-
-    selectedRideTime: string;
 
     onTimeChanged(args) {
 
@@ -345,7 +346,7 @@ export class HomeComponent implements OnInit {
     }
 
     submitOfferSuccess(success) {
-        this.showLoader = false;
+        this.hideLoader();
         //this.offer = new offer();
         dialogs.alert({
             title: "On d Vay",
@@ -355,11 +356,11 @@ export class HomeComponent implements OnInit {
     }
 
     submitOfferError(error) {
-        console.log(error);
-        this.showLoader = false;
+        this.hideLoader();
     }
 
     submitOfferRide(event) {
+        this.LoaderShow();
         console.log(this.offer);
         this.offer.userId = ApplicationSettings.getString("userid");
         this.offer.VehicleTypeText = this.items[this.offer.VechileType];      
@@ -378,6 +379,45 @@ export class HomeComponent implements OnInit {
         this.bikepoolservice.PostService(ServiceURL.OfferRide, objOffer).subscribe(
             success => this.submitOfferSuccess(success),
             error => this.submitOfferError(error)
+        )
+    }
+
+    RideRequestSuccess(success) {
+        this.hideLoader();   
+        ApplicationSettings.setString("ridetime", this.selectedRideTime.toString());
+        this.routerExtensions.navigate(["/riderslist"], { clearHistory: true });     
+    }
+
+    RideRequestError(error) {
+        this.hideLoader();
+    }
+
+    RequestRide()
+    {
+        var rideRequest = {
+            userId: ApplicationSettings.getString("userid"),
+            PickLocation : this.currentLocation,
+            DropLocation:this.searchPhrase,
+            latitude : parseFloat(this.FromLat),
+            longitude : parseFloat(this.FromLong),
+            UserName : ApplicationSettings.getString("email"),
+            VehicleTypeText : this.items[this.selectedIndex],
+            StartTime : "",
+            offerRide:false   
+        }
+
+        let minutes = (this.selectedRideTime.getMinutes().toString().length == 1) ?
+            "0" + this.selectedRideTime.getMinutes().toString() :
+            this.selectedRideTime.getMinutes().toString();
+
+        rideRequest.StartTime = this.selectedRideTime + " : " + minutes;
+
+        var objOffer = { OfferRide: rideRequest };
+
+        this.showLoader = true;
+        this.bikepoolservice.PostService(ServiceURL.OfferRide, objOffer).subscribe(
+            success => this.RideRequestSuccess(success),
+            error => this.RideRequestError(error)
         )
     }
 }

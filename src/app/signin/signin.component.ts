@@ -107,6 +107,12 @@ export class SigninComponent implements OnInit {
   loginError(error) {
     this.isAuthenticating = false;
     this.hideLoader();
+    console.log(error);
+    alert({
+      title: "On d Vay",
+      message: "Please enter correct username/password",
+      okButtonText: "Ok"
+    })
   }
 
   busy: boolean;
