@@ -104,7 +104,8 @@ LoaderShow() {
     
     let objRideStatus =
     {
-      userid : selectedRider.userid,
+      requestedUserId : ApplicationSettings.getString("userid"),
+      riderUserid : selectedRider.userid,
       rideStartTime : ApplicationSettings.getString("ridetime"),
       rideDistance : ApplicationSettings.getString("ridedistance"),
       currentLocation : ApplicationSettings.getString("currentlocation"),

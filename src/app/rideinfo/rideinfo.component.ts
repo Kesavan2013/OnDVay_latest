@@ -15,6 +15,7 @@ export class RideInfo {
   RideFromDeviceToken: string
   RideContactNo: string
   riderContactNo: any
+  requestedUserId : any
 }
 
 @Component({
@@ -39,7 +40,8 @@ export class RideInfoComponent implements OnInit {
       this.rideInfo.RidePickUpTime = objNotification.rideStartTime;
       this.rideInfo.RideStatus = objNotification.ridestatus;
       this.rideInfo.RideFromDeviceToken = objNotification.device_token;
-      this.rideInfo.RideContactNo = "000000";
+      this.rideInfo.requestedUserId = objNotification.requestedUserId;
+      this.rideInfo.RideContactNo = "";
       if (objNotification.phoneNo != undefined) {
         this.rideInfo.RideContactNo = objNotification.phoneNo;
         console.log("RideContactno" + this.rideInfo.RideContactNo);
@@ -57,14 +59,14 @@ export class RideInfoComponent implements OnInit {
   GetRideInformation(status,phoneno): any {
     var objdeviceToken = [];
     objdeviceToken.push({ deviceToken: this.rideInfo.RideFromDeviceToken })
-
-    console.log("Phoneno" + this.rideContactNo);
+    
     var objRideStatus = {
       deviceToken: objdeviceToken,
       requestStatus: status,
       currentLocation: this.rideInfo.RideFromLocation,
       destinationLocation: this.rideInfo.RideToLocation,
-      phoneNo: phoneno
+      phoneNo: phoneno,
+      requestedUserId:this.rideInfo.requestedUserId
     }
 
     return objRideStatus;
