@@ -120,6 +120,7 @@ export class HomeComponent implements OnInit {
             )
         }, '.info/connected');
     }
+    
 
     InitFireBasePlugIn() {
         firebase.init({
@@ -127,6 +128,7 @@ export class HomeComponent implements OnInit {
             persist: false,
             url: "https://metroapplicationproject.firebaseio.com",
             onPushTokenReceivedCallback: function (token) {
+                console.log("token_k7" + token);
                 ApplicationSettings.setString('device_token', token);    
                 console.log("deviceToken"+ ApplicationSettings.getString('device_token'))           
             },
@@ -144,15 +146,15 @@ export class HomeComponent implements OnInit {
             notificationCallbackAndroid: (message: any) => {
                 console.log(JSON.stringify(message));
 
-                //if (message.foreground == false) {
+                if (message.foreground == false) {
                 dialogs.alert({
                     title: "On d Vay",
                     message: "Riders Requested Notification",
                     okButtonText: "ok"
                 });
-                // } else {
-                //     console.log("Message received when inside the app");
-                // }
+                } else {
+                    console.log("Message received when inside the app");
+                }
             },
             onAuthStateChanged: (data: any) => {                
                 console.log("dataError" + JSON.stringify(data))

@@ -132,7 +132,8 @@ export class SigninComponent implements OnInit {
           username: this.user.username,
           email: this.user.email,
           password: this.user.password,
-          deviceToken: ApplicationSettings.getString("device_token")
+          deviceToken: (ApplicationSettings.getString("device_token") != undefined) ?
+                       ApplicationSettings.getString("device_token") : ''
         }
         this.bikepoolservice.PostService(ServiceURL.SignUpOnDVay, objLogin).subscribe(
           success => this.signUpSuccess(success),

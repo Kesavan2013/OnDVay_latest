@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
     public connectionType: string;
     private profileImage : any;
     private username : string;
-    private email : string="";
+    private email : string;
     private loggedIn : boolean;
     
     constructor(private router: Router, private routerExtensions: RouterExtensions,
@@ -95,6 +95,7 @@ export class AppComponent implements OnInit {
         this.loggedIn = false;
         this.username = "";
         this.email = "";        
+        ApplicationSettings.remove("userid");
         firebase.logout();
         this.routerExtensions.navigate(["signin"], {
             transition: {
@@ -106,13 +107,11 @@ export class AppComponent implements OnInit {
     LogoutError(error) { }
 
     Logout() {
-        this.closeDrawer();
-        this.loggedIn = false;
-        this.username = "Welcome Guest!";
-        this.email = "";        
-        firebase.logout();
-        ApplicationSettings.remove("userid");
-        this.router.navigate(["/signin"]);        
+        var objUser = { userid : ApplicationSettings.getString("userid") };
+        this.bikepoolservice.PostService(ServiceURL.DeleteDeviceToken,objUser).subscribe(
+            success => this.LogoutSuccess(success),
+            error => this.LogoutError(error)
+        )
     }
 
     closeDrawer(){
