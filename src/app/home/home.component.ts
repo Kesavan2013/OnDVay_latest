@@ -2,12 +2,10 @@ import { Component, OnInit, NgZone } from "@angular/core";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import * as app from "tns-core-modules/application";
 import * as Geolocation from "nativescript-geolocation";
-import { Accuracy } from "tns-core-modules/ui/enums"; // used to describe at what accuracy the location should be get
 import { SearchBar } from "tns-core-modules/ui/search-bar";
 import { SelectedIndexChangedEventData } from "nativescript-drop-down";
 import { DatePicker } from "tns-core-modules/ui/date-picker";
 import { TimePicker } from "tns-core-modules/ui/time-picker";
-import { EventData, Observable } from "tns-core-modules/data/observable";
 import { BikePoolService } from "../shared/bikepoolservice";
 import { ServiceURL } from "../shared/services"
 import * as dialogs from "tns-core-modules/ui/dialogs";
@@ -15,11 +13,10 @@ import { RouterExtensions } from "nativescript-angular/router";
 const firebase = require("nativescript-plugin-firebase");
 import * as ApplicationSettings from "application-settings";
 import { Router, NavigationExtras } from "@angular/router";
-import { TabView, TabViewItem } from "tns-core-modules/ui/tab-view";
 import { offer } from "../shared/models/offerride";
-import { DateTimePicker } from "nativescript-datetimepicker";
 import { LoadingScreen } from 'nativescript-loading-screen';
-import { stringify } from "@angular/core/src/render3/util";
+import { messaging } from "nativescript-plugin-firebase/messaging";
+
 
 @Component({
     selector: "Home",
@@ -79,6 +76,20 @@ export class HomeComponent implements OnInit {
         let location = this.getDeviceLocation();
         this.InitFireBasePlugIn();
         this.updateStatusAvail();
+
+        messaging.getCurrentPushToken()
+        .then(token => this.setUpDeviceToken(token));
+    }
+
+    setUpDeviceToken(token)
+    {
+        console.log(token);
+        ApplicationSettings.setString("deviceToken",token);
+        let objDeviceToken = {userid : ApplicationSettings.getString("userid") ,deviceToken: ApplicationSettings.getString("deviceToken") }
+        this.bikepoolservice.PostService(ServiceURL.UpdateDeviceToken,objDeviceToken).subscribe(
+            success => console.log(success),
+            error=> console.log(error)
+        );
     }
 
     setDatePickerTime() {
@@ -108,8 +119,8 @@ export class HomeComponent implements OnInit {
             let objUpdateUserLocation =
                 {
                     userid: ApplicationSettings.getString("userid"),
-                    longitude: this.FromLat,
-                    latitude: this.FromLong,
+                    longitude: ApplicationSettings.getString("fromlat"),
+                    latitude:  ApplicationSettings.getString("fromlong"),
                     status: Status,
                     deviceToken : ApplicationSettings.getString("device_token")
                 }
@@ -274,7 +285,9 @@ export class HomeComponent implements OnInit {
     onFindRiders(event) {
         //this.setRideSettings();        
         if (this.searchPhrase != undefined && this.searchPhrase != '') {
-            this.RequestRide();
+            this.hideLoader();   
+            ApplicationSettings.setString("ridetime", this.selectedRideTime.toString());
+            this.routerExtensions.navigate(["/riderslist"], { clearHistory: true });     
         }
         else {
             alert({
@@ -339,7 +352,8 @@ export class HomeComponent implements OnInit {
         let dist = distance.response.route[0].summary.distance
         let travelTime = distance.response.route[0].summary.travelTime;
         this.totalRideDistance = dist / 1000;
-        ApplicationSettings.setString("ridedistance", this.totalRideDistance.toString(2));
+        let rideDistance = Math.round(this.totalRideDistance).toString();
+        ApplicationSettings.setString("ridedistance", rideDistance);
     }
 
     distanceerror(error) {

@@ -107,7 +107,7 @@ export class AppComponent implements OnInit {
     LogoutError(error) { }
 
     Logout() {
-        var objUser = { userid : ApplicationSettings.getString("userid") };
+        var objUser = { userid : ApplicationSettings.getString("userid"),deviceToken : "Logged Out" };
         this.bikepoolservice.PostService(ServiceURL.DeleteDeviceToken,objUser).subscribe(
             success => this.LogoutSuccess(success),
             error => this.LogoutError(error)
